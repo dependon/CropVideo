@@ -224,14 +224,58 @@ class VideoProcessorApp:
         self.texts = LANGUAGES[self.current_lang]
 
         self.root.title(self.texts['title'])
-        self.root.geometry("700x900") # Reduced height for more compact layout
+        self.root.geometry("750x950") # 调整窗口大小以适应新的界面风格
 
+        # 设置主题和样式 - 全新设计风格
         try:
             self.style = ttk.Style(root)
-            available_themes = self.style.theme_names()
-            if 'clam' in available_themes: self.style.theme_use('clam')
-            elif 'alt' in available_themes: self.style.theme_use('alt')
-        except tk.TclError: print("ttk themes not available.")
+            self.style.theme_use('clam')
+            
+            # 配置全局样式 - 使用渐变色调的暗色主题
+            self.style.configure('TFrame', background='#2c3e50')
+            self.style.configure('TLabelframe', background='#2c3e50')
+            self.style.configure('TLabelframe.Label', font=('Montserrat', 11, 'bold'), foreground='#ecf0f1', background='#2c3e50')
+            self.style.configure('TLabel', font=('Montserrat', 10), foreground='#ecf0f1', background='#2c3e50')
+            self.style.configure('TEntry', fieldbackground='#34495e', foreground='#ecf0f1', font=('Montserrat', 10))
+            self.style.configure('TCheckbutton', font=('Montserrat', 10), foreground='#ecf0f1', background='#2c3e50')
+            self.style.configure('TCombobox', font=('Montserrat', 10), fieldbackground='#34495e', foreground='#ecf0f1')
+            
+            # 配置按钮样式 - 圆角渐变按钮
+            self.style.configure('TButton',
+                                font=('Montserrat', 10),
+                                background='#9b59b6',
+                                foreground='#ecf0f1',
+                                padding=(12, 6),
+                                borderwidth=0,
+                                borderradius=15)
+            self.style.map('TButton',
+                          background=[('active', '#8e44ad'), ('disabled', '#7f8c8d')],
+                          foreground=[('disabled', '#bdc3c7')])
+            
+            self.style.configure('Accent.TButton',
+                                font=('Montserrat', 10, 'bold'),
+                                background='#e74c3c',
+                                foreground='#ecf0f1',
+                                padding=(12, 6),
+                                borderwidth=0,
+                                borderradius=15)
+            self.style.map('Accent.TButton',
+                          background=[('active', '#c0392b'), ('disabled', '#95a5a6')],
+                          foreground=[('disabled', '#bdc3c7')])
+            
+            # 配置进度条样式 - 动感渐变进度条
+            self.style.configure('Horizontal.TProgressbar',
+                                background='#e74c3c',
+                                troughcolor='#34495e',
+                                borderwidth=0,
+                                thickness=8,
+                                borderradius=8)
+            
+        except tk.TclError:
+            print("ttk themes not available.")
+            
+        # 设置窗口背景色 - 深色渐变背景
+        root.configure(background='#2c3e50')
 
         # --- Variables ---
         self.input_path = tk.StringVar()
@@ -277,13 +321,19 @@ class VideoProcessorApp:
         self.enable_frame_extract.trace_add("write", self.update_widget_states)
 
         # --- UI Layout ---
-        self.main_frame = ttk.Frame(root, padding="5")
+        self.main_frame = ttk.Frame(root, padding="15")
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
         self.main_frame.columnconfigure(0, weight=1)
         self.main_frame.columnconfigure(1, weight=1)
         self.main_frame.columnconfigure(2, weight=0)
+        
+        # 设置全局布局样式 - 更加宽敞的布局
+        FRAME_PADDING = "15"
+        WIDGET_PADX = 10
+        WIDGET_PADY = 8
+        SECTION_PADY = 14
         
         # Detect system language
         try:
@@ -296,30 +346,30 @@ class VideoProcessorApp:
         # Language Button
         self.lang_button = ttk.Button(self.main_frame, text=self.texts['lang_button'], command=self.toggle_language,
                                      style='Accent.TButton')
-        self.lang_button.grid(row=0, column=2, sticky=tk.E, padx=5, pady=(0,10))
+        self.lang_button.grid(row=0, column=2, sticky=tk.E, padx=8, pady=(0,12))
 
         # Input File Section
-        self.input_frame = ttk.LabelFrame(self.main_frame, text=self.texts['input_frame'], padding="5")
-        self.input_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=1)
+        self.input_frame = ttk.LabelFrame(self.main_frame, text=self.texts['input_frame'], padding=FRAME_PADDING)
+        self.input_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=SECTION_PADY)
         self.input_frame.columnconfigure(1, weight=1)
-        self.input_file_label = ttk.Label(self.input_frame, text=self.texts['file_label'], font=('Arial', 10))
-        self.input_file_label.grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-        ttk.Entry(self.input_frame, textvariable=self.input_path, width=60, font=('Arial', 10)).grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.input_file_label = ttk.Label(self.input_frame, text=self.texts['file_label'])
+        self.input_file_label.grid(row=0, column=0, sticky=tk.W, padx=WIDGET_PADX, pady=WIDGET_PADY)
+        ttk.Entry(self.input_frame, textvariable=self.input_path, width=60).grid(row=0, column=1, sticky=(tk.W, tk.E), padx=WIDGET_PADX, pady=WIDGET_PADY)
         self.input_browse_button = ttk.Button(self.input_frame, text=self.texts['browse_button'], command=self.browse_input,
                                            style='Accent.TButton')
-        self.input_browse_button.grid(row=0, column=2, sticky=tk.E, padx=5, pady=5)
+        self.input_browse_button.grid(row=0, column=2, sticky=tk.E, padx=WIDGET_PADX, pady=WIDGET_PADY)
 
         # Video Info Section
-        self.info_frame = ttk.LabelFrame(self.main_frame, text=self.texts['video_information'], padding="5")
-        self.info_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=1)
+        self.info_frame = ttk.LabelFrame(self.main_frame, text=self.texts['video_information'], padding=FRAME_PADDING)
+        self.info_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=SECTION_PADY)
         self.info_duration_label = ttk.Label(self.info_frame, textvariable=self.original_duration_str)
-        self.info_duration_label.grid(row=0, column=0, sticky=tk.W, padx=5, pady=2)
+        self.info_duration_label.grid(row=0, column=0, sticky=tk.W, padx=WIDGET_PADX, pady=WIDGET_PADY)
         self.info_resolution_label = ttk.Label(self.info_frame, textvariable=self.original_resolution_str)
-        self.info_resolution_label.grid(row=0, column=1, sticky=tk.W, padx=5, pady=2)
+        self.info_resolution_label.grid(row=0, column=1, sticky=tk.W, padx=WIDGET_PADX, pady=WIDGET_PADY)
         self.info_fps_label = ttk.Label(self.info_frame, textvariable=self.original_fps_str)
-        self.info_fps_label.grid(row=1, column=0, sticky=tk.W, padx=5, pady=2)
+        self.info_fps_label.grid(row=1, column=0, sticky=tk.W, padx=WIDGET_PADX, pady=WIDGET_PADY)
         self.info_frames_label = ttk.Label(self.info_frame, textvariable=self.original_frame_count_str)
-        self.info_frames_label.grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
+        self.info_frames_label.grid(row=1, column=1, sticky=tk.W, padx=WIDGET_PADX, pady=WIDGET_PADY)
 
         # --- Video Processing Options Frame ---
         self.video_processing_frame = ttk.LabelFrame(self.main_frame, text=self.texts['video_processing_options_frame'], padding="5")
@@ -426,10 +476,15 @@ class VideoProcessorApp:
 
         # --- Hyperlink ---
         self.link_frame = ttk.Frame(self.main_frame)
-        self.link_frame.grid(row=8, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(20, 0))
-        self.link_label = ttk.Label(self.link_frame, text=self.texts['github_link'], foreground="blue", cursor="hand2")
+        self.link_frame.grid(row=8, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(30, 15))
+        self.link_label = ttk.Label(self.link_frame, text=self.texts['github_link'],
+                                  font=('Montserrat', 9, 'italic'),
+                                  foreground='#e74c3c',
+                                  cursor='hand2')
         self.link_label.pack()
-        self.link_label.bind("<Button-1>", self.open_link)
+        self.link_label.bind('<Button-1>', self.open_link)
+        self.link_label.bind('<Enter>', lambda e: self.link_label.configure(foreground='#c0392b'))
+        self.link_label.bind('<Leave>', lambda e: self.link_label.configure(foreground='#e74c3c'))
 
         # Initial UI state update
         self.update_widget_states("","","") # Trigger initial state based on checkboxes
@@ -445,7 +500,7 @@ class VideoProcessorApp:
     def update_language_widgets(self):
         """Updates the text of all language-dependent widgets."""
         self.root.title(self.texts['title'])
-        self.lang_button.config(text=self.texts['lang_button'], bg='#4CAF50', fg='white', font=('Helvetica', 10, 'bold'), relief='groove', bd=2, padx=10, pady=5, activebackground='#45a049')
+        self.lang_button.config(text=self.texts['lang_button'], bg='#e74c3c', fg='#ecf0f1', font=('Montserrat', 10, 'bold'), relief='flat', bd=0, padx=12, pady=6, activebackground='#c0392b')
         
         # Update mutex warning if needed
         if hasattr(self, 'mutex_warning_str'):
@@ -454,7 +509,7 @@ class VideoProcessorApp:
         # Input/Info
         self.input_frame.config(text=self.texts['input_frame'])
         self.input_file_label.config(text=self.texts['file_label'])
-        self.input_browse_button.config(text=self.texts['browse_button'], bg='#2196F3', fg='white', font=('Helvetica', 10), relief='groove', bd=2, padx=10, pady=5, activebackground='#0b7dda')
+        self.input_browse_button.config(text=self.texts['browse_button'], bg='#9b59b6', fg='#ecf0f1', font=('Montserrat', 10), relief='flat', bd=0, padx=12, pady=6, activebackground='#8e44ad')
         self.original_duration_str.set(f"{self.texts['duration_label']} {self.texts['na'] if self.video_duration_sec == 0 else format_time(self.video_duration_sec)}")
         self.original_resolution_str.set(f"{self.texts['resolution_label']} {self.texts['na'] if self.video_width == 0 else f'{self.video_width}x{self.video_height}'}")
         self.original_fps_str.set(f"{self.texts['fps_label']} {self.texts['na'] if self.video_fps == 0 else f'{self.video_fps:.2f}'}")
@@ -472,7 +527,7 @@ class VideoProcessorApp:
         self.fps_label_widget.config(text=self.texts['output_fps_label'])
         self.output_video_frame_widget.config(text=self.texts['output_video_frame'])
         self.output_file_label.config(text=self.texts['file_label'])
-        self.output_browse_button.config(text=self.texts['save_as_button'], bg='#2196F3', fg='white', font=('Helvetica', 10), relief='groove', bd=2, padx=10, pady=5, activebackground='#0b7dda')
+        self.output_browse_button.config(text=self.texts['save_as_button'], bg='#9b59b6', fg='#ecf0f1', font=('Montserrat', 10), relief='flat', bd=0, padx=12, pady=6, activebackground='#8e44ad')
 
         # Frame Extraction Section
         self.frame_extract_options_frame.config(text=self.texts['frame_extract_options_frame'])
@@ -480,12 +535,12 @@ class VideoProcessorApp:
         self.start_frame_label.config(text=self.texts['start_frame_label'])
         self.end_frame_label.config(text=self.texts['end_frame_label'])
         self.output_dir_label.config(text=self.texts['output_dir_label'])
-        self.output_dir_button.config(text=self.texts['browse_dir_button'], bg='#2196F3', fg='white', font=('Helvetica', 10), relief='groove', bd=2, padx=10, pady=5, activebackground='#0b7dda')
+        self.output_dir_button.config(text=self.texts['browse_dir_button'], bg='#9b59b6', fg='#ecf0f1', font=('Montserrat', 10), relief='flat', bd=0, padx=12, pady=6, activebackground='#8e44ad')
         self.img_format_label.config(text=self.texts['img_format_label'])
 
         # Action Buttons
-        self.process_video_button.config(text=self.texts['process_video_button'], bg='#FF5722', fg='white', font=('Helvetica', 10, 'bold'), relief='groove', bd=2, padx=15, pady=7, activebackground='#e64a19')
-        self.extract_frames_button.config(text=self.texts['extract_frames_button'], bg='#FF5722', fg='white', font=('Helvetica', 10, 'bold'), relief='groove', bd=2, padx=15, pady=7, activebackground='#e64a19')
+        self.process_video_button.config(text=self.texts['process_video_button'], bg='#e74c3c', fg='#ecf0f1', font=('Montserrat', 11, 'bold'), relief='flat', bd=0, padx=18, pady=8, activebackground='#c0392b')
+        self.extract_frames_button.config(text=self.texts['extract_frames_button'], bg='#e74c3c', fg='#ecf0f1', font=('Montserrat', 11, 'bold'), relief='flat', bd=0, padx=18, pady=8, activebackground='#c0392b')
 
         # Status & Link
         current_status = self.status_text.get().split(LANGUAGES['en']['status_label'])[-1].split(LANGUAGES['zh']['status_label'])[-1].strip()
