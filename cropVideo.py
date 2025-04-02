@@ -500,7 +500,18 @@ class VideoProcessorApp:
     def update_language_widgets(self):
         """Updates the text of all language-dependent widgets."""
         self.root.title(self.texts['title'])
-        self.lang_button.config(text=self.texts['lang_button'], bg='#e74c3c', fg='#ecf0f1', font=('Montserrat', 10, 'bold'), relief='flat', bd=0, padx=12, pady=6, activebackground='#c0392b')
+        self.lang_button.configure(text=self.texts['lang_button'])
+        # Update button style
+        self.style.configure('Accent.TButton',
+                          font=('Montserrat', 10, 'bold'),
+                          background='#e74c3c',
+                          foreground='#ecf0f1',
+                          padding=(12, 6),
+                          borderwidth=0,
+                          borderradius=15)
+        self.style.map('Accent.TButton',
+                     background=[('active', '#c0392b'), ('disabled', '#95a5a6')],
+                     foreground=[('disabled', '#bdc3c7')])
         
         # Update mutex warning if needed
         if hasattr(self, 'mutex_warning_str'):
@@ -509,7 +520,7 @@ class VideoProcessorApp:
         # Input/Info
         self.input_frame.config(text=self.texts['input_frame'])
         self.input_file_label.config(text=self.texts['file_label'])
-        self.input_browse_button.config(text=self.texts['browse_button'], bg='#9b59b6', fg='#ecf0f1', font=('Montserrat', 10), relief='flat', bd=0, padx=12, pady=6, activebackground='#8e44ad')
+        self.input_browse_button.config(text=self.texts['browse_button'])
         self.original_duration_str.set(f"{self.texts['duration_label']} {self.texts['na'] if self.video_duration_sec == 0 else format_time(self.video_duration_sec)}")
         self.original_resolution_str.set(f"{self.texts['resolution_label']} {self.texts['na'] if self.video_width == 0 else f'{self.video_width}x{self.video_height}'}")
         self.original_fps_str.set(f"{self.texts['fps_label']} {self.texts['na'] if self.video_fps == 0 else f'{self.video_fps:.2f}'}")
@@ -527,7 +538,7 @@ class VideoProcessorApp:
         self.fps_label_widget.config(text=self.texts['output_fps_label'])
         self.output_video_frame_widget.config(text=self.texts['output_video_frame'])
         self.output_file_label.config(text=self.texts['file_label'])
-        self.output_browse_button.config(text=self.texts['save_as_button'], bg='#9b59b6', fg='#ecf0f1', font=('Montserrat', 10), relief='flat', bd=0, padx=12, pady=6, activebackground='#8e44ad')
+        self.output_browse_button.config(text=self.texts['save_as_button'])
 
         # Frame Extraction Section
         self.frame_extract_options_frame.config(text=self.texts['frame_extract_options_frame'])
@@ -535,12 +546,12 @@ class VideoProcessorApp:
         self.start_frame_label.config(text=self.texts['start_frame_label'])
         self.end_frame_label.config(text=self.texts['end_frame_label'])
         self.output_dir_label.config(text=self.texts['output_dir_label'])
-        self.output_dir_button.config(text=self.texts['browse_dir_button'], bg='#9b59b6', fg='#ecf0f1', font=('Montserrat', 10), relief='flat', bd=0, padx=12, pady=6, activebackground='#8e44ad')
+        self.output_dir_button.config(text=self.texts['browse_dir_button'])
         self.img_format_label.config(text=self.texts['img_format_label'])
 
         # Action Buttons
-        self.process_video_button.config(text=self.texts['process_video_button'], bg='#e74c3c', fg='#ecf0f1', font=('Montserrat', 11, 'bold'), relief='flat', bd=0, padx=18, pady=8, activebackground='#c0392b')
-        self.extract_frames_button.config(text=self.texts['extract_frames_button'], bg='#e74c3c', fg='#ecf0f1', font=('Montserrat', 11, 'bold'), relief='flat', bd=0, padx=18, pady=8, activebackground='#c0392b')
+        self.process_video_button.configure(text=self.texts['process_video_button'])
+        self.extract_frames_button.configure(text=self.texts['extract_frames_button'])
 
         # Status & Link
         current_status = self.status_text.get().split(LANGUAGES['en']['status_label'])[-1].split(LANGUAGES['zh']['status_label'])[-1].strip()
